@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#090c15">
+  <meta name="description" content="把想说的话，亮给世界看。可自定义文字与颜色的霓虹灯牌，支持滚动、呼吸发光与离线展示。">
+  <title>夜光 · 霓虹灯牌</title>
+  <link rel="stylesheet" href="./style.css?v=2">
+  <script src="./app.js?v=2" defer></script>
+</head>
+<body>
+  <svg class="svg-defs" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><defs>
+    <symbol id="i-spark" viewBox="0 0 24 24"><path d="m12 2 2.5 7.5L22 12l-7.5 2.5L12 22l-2.5-7.5L2 12l7.5-2.5Z"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="m9 5 11 7-11 7Z"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></symbol>
+    <symbol id="i-expand" viewBox="0 0 24 24"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+    <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 4.3 1.7c-1 .7-1.8 1.1-1.8 2.8M12 17h.01"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-5-5 5 5-5 5"/></symbol>
+  </defs></svg>
+
+  <div class="app-shell" id="app-shell">
+    <header class="app-header">
+      <div class="brand"><span class="brand-mark"><svg><use href="#i-spark"/></svg></span><span class="brand-name">夜光<span>NEON STUDIO</span></span></div>
+      <p class="header-caption">把想说的话，亮给世界看。</p>
+      <div class="header-actions"><span class="offline-status" id="offline-status"><i></i><span id="offline-text">正在准备离线使用</span></span><button id="quick-present" class="quick-present"><svg><use href="#i-expand"/></svg>展示</button><button class="icon-button" id="help-button" aria-label="使用指南"><svg><use href="#i-help"/></svg></button></div>
+    </header>
+
+    <main class="workspace">
+      <section class="preview-pane" aria-label="灯牌预览">
+        <div class="preview-top"><span class="section-kicker"><i></i>实时预览</span><span class="preview-type" id="preview-type">霓虹灯管 / 常亮</span></div>
+        <div class="board-frame">
+          <div class="board" id="board" role="img" aria-label="霓虹灯牌：今晚开心" tabindex="-1">
+            <div class="ambient" aria-hidden="true"></div><div class="grid-texture" aria-hidden="true"></div>
+            <div class="marquee-window" id="marquee-window"><div class="marquee-track" id="marquee-track"><div class="marquee-group" id="group-a"></div><div class="marquee-group" id="group-b" aria-hidden="true"></div></div></div>
+            <span class="empty-message" id="empty-message" hidden>输入你想说的话</span>
+          </div>
+          <div class="preview-corner top-left" aria-hidden="true"></div><div class="preview-corner bottom-right" aria-hidden="true"></div>
+        </div>
+        <div class="preview-bottom"><span class="display-note"><span class="tiny-dot"></span><span id="display-note">灯光已点亮</span></span><button class="quiet-button" id="preview-pause" disabled><svg><use id="pause-icon" href="#i-pause"/></svg><span id="pause-label">暂停动效</span></button></div>
+        <div class="preset-section"><span class="preset-label">灵感，从一句话开始</span><div class="preset-list" aria-label="快捷文案"><button data-preset="今晚开心">今晚开心</button><button data-preset="欢迎光临">欢迎光临</button><button data-preset="为你打 CALL">为你打 CALL</button><button data-preset="HAPPY BIRTHDAY">HAPPY BIRTHDAY</button></div></div>
+      </section>
+
+      <aside class="editor" aria-label="编辑灯牌">
+        <div class="editor-scroll">
+          <div class="editor-heading"><h1>让文字发光</h1><span class="editor-subtitle">每一处，都随你喜欢。</span></div>
+          <section class="control-section first-section"><div class="control-label"><label for="message">灯牌文字</label><span id="character-count">4 / 60</span></div><textarea id="message" maxlength="120" rows="2" spellcheck="false" placeholder="输入你想说的话">今晚开心</textarea></section>
+          <section class="control-section vocabulary-section" aria-label="西语单词练习">
+            <div class="control-label"><h2>西语单词</h2><span id="vocabulary-progress" aria-live="polite" hidden></span></div>
+            <p class="vocabulary-note">来自 Notion「Palabras y frases」首列；每轮 10 个、不重复，每词约展示 5 秒。</p>
+            <button id="draw-words" class="vocabulary-draw">✦ 随机抽取 10 个</button>
+            <div id="word-navigation" class="word-navigation" hidden>
+              <button id="word-previous" type="button">← 上一个</button>
+              <button id="word-next" type="button">下一个 →</button>
+              <button id="word-stop" type="button" aria-label="结束单词练习">结束</button>
+            </div>
+          </section>
+          <section class="control-section"><div class="control-label"><h2>发光颜色</h2><span id="color-name">霓虹粉</span></div><div class="swatches" aria-label="发光颜色"><button class="swatch" style="--swatch:#ff3aaf" data-color="#ff3aaf" aria-label="霓虹粉" aria-pressed="true"><svg><use href="#i-check"/></svg></button><button class="swatch" style="--swatch:#4df5ff" data-color="#4df5ff" aria-label="冰川蓝" aria-pressed="false"><svg><use href="#i-check"/></svg></button><button class="swatch" style="--swatch:#ae7aff" data-color="#ae7aff" aria-label="梦境紫" aria-pressed="false"><svg><use href="#i-check"/></svg></button><button class="swatch" style="--swatch:#b7ff65" data-color="#b7ff65" aria-label="青柠绿" aria-pressed="false"><svg><use href="#i-check"/></svg></button><button class="swatch" style="--swatch:#ffbf55" data-color="#ffbf55" aria-label="日落橙" aria-pressed="false"><svg><use href="#i-check"/></svg></button><label class="custom-swatch" title="自定义颜色"><span>＋</span><input id="custom-color" type="color" value="#ff3aaf" aria-label="自定义发光颜色"></label></div></section>
+          <section class="control-section"><div class="control-label"><h2>霓虹质感</h2></div><div class="segmented three" aria-label="霓虹质感"><button data-style="tube" aria-pressed="true">灯管</button><button data-style="solid" aria-pressed="false">柔光</button><button data-style="outline" aria-pressed="false">空心</button></div></section>
+          <section class="control-section"><div class="control-label"><label for="text-size">文字大小</label><output id="size-value" for="text-size">100%</output></div><input id="text-size" type="range" min="60" max="180" step="5" value="100"></section>
+          <section class="control-section"><div class="control-label"><label for="glow">光晕强度</label><output id="glow-value" for="glow">70%</output></div><input id="glow" type="range" min="30" max="100" step="5" value="70"></section>
+          <section class="control-section"><div class="control-label"><h2>文字动效</h2></div><div class="segmented" aria-label="文字动效"><button data-motion="still" aria-pressed="true">静止</button><button data-motion="scroll" aria-pressed="false">滚动</button></div><div id="scroll-settings" class="scroll-settings" hidden><div class="control-label"><label for="speed">滚动速度</label><output id="speed-value" for="speed">4 档</output></div><input id="speed" type="range" min="1" max="10" step="1" value="4"><div class="direction-options" aria-label="滚动方向"><button data-direction="left" aria-pressed="true">← 向左</button><button data-direction="right" aria-pressed="false">向右 →</button></div></div></section>
+          <div class="switch-row"><label for="breathe">呼吸灯<span>让光芒慢慢亮起，再轻轻落下</span></label><input id="breathe" class="switch" type="checkbox" role="switch"></div>
+          <section class="control-section"><div class="control-label"><h2>背景</h2></div><div class="segmented" aria-label="灯牌背景"><button data-background="grid" aria-pressed="true">细网格</button><button data-background="black" aria-pressed="false">纯黑</button></div></section>
+          <section class="control-section"><div class="control-label"><label for="brightness">画面亮度</label><output id="brightness-value" for="brightness">100%</output></div><input id="brightness" type="range" min="25" max="100" step="5" value="100"></section>
+          <button id="reset-button" class="reset-button">恢复默认设置</button>
+        </div>
+        <div class="editor-bottom"><button id="present-button" class="present-button"><svg><use href="#i-expand"/></svg>开始展示<svg class="present-arrow"><use href="#i-arrow"/></svg></button><p>横着放，大一点，更出彩。</p></div>
+      </aside>
+    </main>
+    <footer class="app-footer"><span>文字、颜色与设置保存在这台设备上。</span><span>MADE TO GLOW <svg><use href="#i-spark"/></svg></span></footer>
+  </div>
+
+  <div id="presentation-controls" class="presentation-controls" hidden><button id="presentation-word-previous" aria-label="上一个单词" hidden>←</button><span id="presentation-word-progress" aria-live="polite" hidden></span><button id="presentation-word-next" aria-label="下一个单词" hidden>→</button><button id="presentation-pause" aria-label="暂停动效"><svg><use id="presentation-pause-icon" href="#i-pause"/></svg></button><button id="exit-button" aria-label="退出展示"><svg><use href="#i-close"/></svg><span>退出展示</span></button></div>
+  <div id="toast" class="toast" role="status" hidden></div>
+  <div id="help-overlay" class="overlay" hidden><section class="help-panel" role="dialog" aria-modal="true" aria-labelledby="help-title" tabindex="-1"><header><div><span class="section-kicker">A LITTLE GUIDE</span><h2 id="help-title">把这一刻，亮起来。</h2></div><button class="icon-button" id="help-close" aria-label="关闭使用指南"><svg><use href="#i-close"/></svg></button></header><div id="help-body"><p>编辑文字后，选择颜色和质感，点击“开始展示”。轻点展示画面，即可呼出暂停和退出按钮。</p><p id="install-guide">这是 GitHub Pages 网页版，可直接在 iPad Safari 或任意浏览器打开。</p><p id="wake-guide">支持常亮的浏览器会自动请求保持屏幕唤醒。如仍会自动锁屏，请在“设置 → 显示与亮度 → 自动锁定”中选择“永不”。</p><p>画面亮度调整只影响灯牌画面；屏幕背光请在 iPad 控制中心调整。灯牌文字只保存在这台设备，不会上传。</p><p>键盘：F 开始展示，空格暂停或继续动效，Escape 退出展示或关闭弹窗。系统开启“减少动态效果”时会停用滚动和呼吸动画。</p><a class="download-link" id="download-link" href="./downloads/">下载独立 iPad App 工程 →</a></div><button id="help-done" class="done-button">开始发光</button></section></div>
+</body>
+</html>
